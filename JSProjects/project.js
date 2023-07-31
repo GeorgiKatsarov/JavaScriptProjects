@@ -8,6 +8,21 @@
 
 const prompt = require("prompt-sync")();
 
+const ROWS = 3;
+const COLS = 3;
+const SYMBOWS_COUNT = {
+    "A":2,
+    "B":4,
+    "C":6,
+    "D":8
+}
+const SYMBOWS_VALUES = {
+    "A":5,
+    "B":4,
+    "C":3,
+    "D":2
+}
+
 const deposit = () => {
     while(true){
         const depositAmount = prompt("Enter the size of your deposit: ");
@@ -34,17 +49,41 @@ const getNumberOfLines = () => {
     }
 }
 
-const getBet = () => {
+const getBet = (balance, numberOfLines) => {
     while (true){
         const bet = parseFloat(prompt("How much do you want to bet: "));
 
-        if (isNaN(bet) || bet<=0 || bet>balance){
+        if (isNaN(bet) || bet <= 0 || bet > balance/numberOfLines) {
             console.log("Please enter a valid bet!");
-        }else{
+        } else {
             return bet;
         }
     }
 }
+
+const spin = () => {
+    const symbols = [];
+    for (const[symbol, count] of Object.entries(SYMBOWS_COUNT)) {
+        for (let i = 0; i<count; i++) {
+            symbols.push(symbol);
+        }
+    }
+
+    const reels = [[], [], []];
+    for (let i = 0; i < COLS; i++) {
+        const reelSymbols = [...symbols];
+        for (let j = 0; j < ROWS; j++) {
+            const randomIndex = Math.floor(Math.random() * reelSymbols.length);
+            const selectedSymbol = reelSymbols[randomIndex];
+            reels[i].push(selectedSymbol);
+            reelSymbols.splice(randomIndex, 1);
+        }
+    }
+    
+    return reels;
+}
 let balance = deposit();
 const numberOfLines = getNumberOfLines();
-const bet = getBet();
+const bet = getBet(balance, numberOfLines);
+const reels = spin();
+console.log(reels);
